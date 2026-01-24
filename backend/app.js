@@ -1,9 +1,12 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
 
 console.log("App file loaded");   // 👈 add this
 
 const app = express();
+const connectDB = require("./db/db");
+connectDB();
 
 app.use(cors());
 app.use(express.json());
