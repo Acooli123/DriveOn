@@ -1,26 +1,62 @@
-import express from 'express';
-import { body } from "express-validator";
-import { registerUser, loginUser } from '../controllers/user.controllers.js';
+import { validationResult } from "express-validator";
+import User from "../models/user.model.js";
 
-const router = express.Router();
+/* ================= REGISTER ================= */
+export const registerUser = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-/* Test route */
-router.get("/", (req, res) => {
-  res.json({ message: "Users route working" });
-});
+    const { fullname, email, password } = req.body;
 
-router.post('/register',
-    body('fullname.firstname').isLength({min:3}).withMessage('First name must be at least 3 characters long'),
-    body('fullname.lastname').optional().isLength({min:3}).withMessage('Last name must be at least 3 characters long'),
-    body('email').isEmail().withMessage('Invalid email address'),
-    body('password').isLength({min:6}).withMessage('Password must be at least 6 characters long'),
-    registerUser
-);
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
 
-router.post('/login',
-    body('email').isEmail().withMessage('Invalid email address'),
-    body('password').isLength({min:6}).withMessage('Password must be at least 6 characters long'),
-    loginUser
-);
+    const user = await User.create({ fullname, email, password });
 
-export default router;
+    res.status(201).json({
+      message: "User registered successfully",
+      user
+    });
+  } catch (err) {
+    console.error("Register error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ================= LOGIN ================= */
+export const loginUser = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = user.generateAuthToken();
+
+    res.status(200).json({
+      message: "User logged in successfully",
+      token,
+      user
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
