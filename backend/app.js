@@ -1,12 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-require('dotenv').config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 console.log("App file loaded");   // 👈 add this
 
 const app = express();
-const connectDB = require("./db/db");
-const userRoutes = require('./routes/user.routes');
+import connectDB from "./db/db.js";
+import userRoutes from './routes/user.routes.js';
 connectDB();
 
 app.use(cors());
@@ -20,4 +22,4 @@ app.get("/", (req, res) => {
 
 app.use('/users', userRoutes)
 
-module.exports = app;
+export default app;

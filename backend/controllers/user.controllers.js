@@ -1,8 +1,8 @@
-const { validationResult } = require("express-validator");
-//const userModel = require("../models/user.model");
+import { validationResult } from "express-validator";
+//import userModel from "../models/user.model.js";
 
 
-exports.registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
