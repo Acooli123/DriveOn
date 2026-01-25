@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-//import userModel from "../models/user.model.js";
+import userModel from "../models/user.model.js";
 
 
 export const registerUser = async (req, res) => {
@@ -20,7 +20,7 @@ export const registerUser = async (req, res) => {
 };
 
 
-exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
