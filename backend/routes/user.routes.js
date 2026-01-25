@@ -1,8 +1,17 @@
-import { validationResult } from "express-validator";
-import User from "../models/user.model.js";
+import express from 'express';
+import { body, validationResult } from "express-validator";
+import userModel from '../models/user.model.js';
+import { createUser } from '../services/user.services.js';
 
-/* ================= REGISTER ================= */
-export const registerUser = async (req, res) => {
+const router = express.Router();
+
+/* Test route */
+router.get("/", (req, res) => {
+  res.json({ message: "Users route working" });
+});
+
+/* Register user */
+const registerUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -10,53 +19,60 @@ export const registerUser = async (req, res) => {
     }
 
     const { fullname, email, password } = req.body;
-
-    const exists = await User.findOne({ email });
-    if (exists) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-
-    const user = await User.create({ fullname, email, password });
+    const user = await createUser({
+      firstname: fullname.firstname,
+      lastname: fullname.lastname,
+      email,
+      password
+    });
 
     res.status(201).json({
       message: "User registered successfully",
       user
     });
   } catch (err) {
-    console.error("Register error:", err);
+    console.error("Register error:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-/* ================= LOGIN ================= */
-export const loginUser = async (req, res) => {
+router.post('/register',
+    body('fullname.firstname').isLength({min:3}).withMessage('First name must be at least 3 characters long'),
+    body('fullname.lastname').optional().isLength({min:3}).withMessage('Last name must be at least 3 characters long'),
+    body('email').isEmail().withMessage('Invalid email address'),
+    body('password').isLength({min:6}).withMessage('Password must be at least 6 characters long'),
+    registerUser
+);
+
+/* Login user */
+const loginUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     const { email, password } = req.body;
-
-    const user = await User.findOne({ email }).select("+password");
+    const user = await userModel.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = user.generateAuthToken();
-
-    res.status(200).json({
-      message: "User logged in successfully",
-      token,
-      user
-    });
+    res.status(200).json({ token, user });
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("Login error:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+router.post('/login',
+    body('email').isEmail().withMessage('Invalid email address'),
+    body('password').isLength({min:6}).withMessage('Password must be at least 6 characters long'),
+    loginUser
+);
+
+export default router;
