@@ -37,10 +37,24 @@ export const loginUser = async (req, res) => {
     }
 
     const token = user.generateAuthToken();
+    res.cookie('token', token, );
     res.status(200).json({ token, user });
 
   } catch (err) {
     console.error("Login error:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error("Profile error:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 };

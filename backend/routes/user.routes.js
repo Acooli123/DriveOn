@@ -2,7 +2,11 @@ import express from 'express';
 import { body, validationResult } from "express-validator";
 import userModel from '../models/user.model.js';
 import { createUser } from '../services/user.services.js';
+import { authenticateToken } from '../middlewares/auth.middileware.js';
+import { getProfile } from '../controllers/user.controllers.js';
+import BlacklistToken from "../models/blacklistToken.model.js";
 
+//import blacklistTokenModel from '../models/blacklistToken.model.js';
 const router = express.Router();
 
 /* Test route */
@@ -74,5 +78,24 @@ router.post('/login',
     body('password').isLength({min:6}).withMessage('Password must be at least 6 characters long'),
     loginUser
 );
+
+router.get('/profile', authenticateToken, getProfile);
+
+/* Logout user - to be implemented */
+
+router.get("/logout", authenticateToken, async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(400).json({ message: "No token" });
+
+    await BlacklistToken.create({ token });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Logout error:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 export default router;
