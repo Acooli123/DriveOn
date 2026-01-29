@@ -1,0 +1,24 @@
+{
+  "message": "Captain created",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTdhZTA5ZjBlZDgyMzU0ZTU5NTZmOGYiLCJlbWFpbCI6ImFtaXQuYWNvb2xpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5NjYwNTc1LCJleHAiOjE3Njk3NDY5NzV9.4-U1vm6EX5ZERcXctpYrrr8K5vFm-NcfjFsIzctnQkg",
+  "captain": {
+    "fullName": {
+      "firstName": "Amit",
+      "lastName": "Acooli"
+    },
+    "email": "amit.acooli@example.com",
+    "password": "$2b$10$dqD168RR2YLNne4FJmnoJ.9.OcSzBRLvvsJWQVKGXBEvUl9VxipfS",
+    "socketId": null,
+    "status": "available",
+    "vehicle": {
+      "color": "Black",
+      "licensePlate": "DL09XY7788",
+      "capacity": 3,
+      "vehicleType": "bike"
+    },
+    "age": 28,
+    "experience": 4,
+    "_id": "697ae09f0ed82354e5956f8f",
+    "__v": 0
+  }
+}
