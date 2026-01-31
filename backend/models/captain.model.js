@@ -80,10 +80,14 @@ captainSchema.pre("save", async function () {
 });
 
 
-captainSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ _id: this._id, email: this.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    return token;
+captainSchema.methods.generateAuthToken = function () {
+  return jwt.sign(
+    { id: this._id.toString() },  // MUST be id
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
 };
+
 captainSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };

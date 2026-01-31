@@ -228,6 +228,112 @@ Example request body:
     }
     ```
 
+## GET /captains/profile
+
+### Description
+This endpoint retrieves the profile of the authenticated captain.
+
+### Request
+- **Method**: GET
+- **URL**: `/captains/profile`
+- **Headers**: `Authorization: Bearer <token>` (required)
+
+### Response
+
+#### Success Response
+- **Status Code**: 200 OK
+- **Content-Type**: `application/json`
+- **Body**:
+  ```json
+  {
+    "captain": {
+      "fullName": {
+        "firstName": "John",
+        "lastName": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vehicle": {
+        "color": "Red",
+        "licensePlate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car A/C"
+      },
+      "age": 30,
+      "experience": 5,
+      "status": "available",
+      "location": {
+        "latitude": null,
+        "longitude": null
+      },
+      "socketId": null
+    }
+  }
+  ```
+
+#### Error Responses
+- **Status Code**: 401 Unauthorized
+  - **Body**:
+    ```json
+    {
+      "message": "Unauthorized"
+    }
+    ```
+
+- **Status Code**: 404 Not Found
+  - **Body**:
+    ```json
+    {
+      "message": "Captain not found"
+    }
+    ```
+
+- **Status Code**: 500 Internal Server Error
+  - **Body**:
+    ```json
+    {
+      "message": "Server error"
+    }
+    ```
+
+## GET /captains/logout
+
+### Description
+This endpoint logs out the authenticated captain by blacklisting the token, making it invalid for future requests.
+
+### Request
+- **Method**: GET
+- **URL**: `/captains/logout`
+- **Headers**: `Authorization: Bearer <token>` (required)
+
+### Response
+
+#### Success Response
+- **Status Code**: 200 OK
+- **Content-Type**: `application/json`
+- **Body**:
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+#### Error Responses
+- **Status Code**: 400 Bad Request
+  - **Body**:
+    ```json
+    {
+      "message": "No token"
+    }
+    ```
+
+- **Status Code**: 500 Internal Server Error
+  - **Body**:
+    ```json
+    {
+      "message": "Server error message"
+    }
+    ```
+
 ## GET /users/logout
 
 ### Description

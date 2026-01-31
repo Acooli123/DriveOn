@@ -2,7 +2,7 @@ import express from 'express';
 import { body, validationResult } from "express-validator";
 import userModel from '../models/user.model.js';
 import { createUser } from '../services/user.services.js';
-import { authenticateToken } from '../middlewares/auth.middileware.js';
+import { authUser } from '../middlewares/auth.middileware.js';
 import { getProfile } from '../controllers/user.controllers.js';
 import BlacklistToken from "../models/blacklistToken.model.js";
 
@@ -79,11 +79,11 @@ router.post('/login',
     loginUser
 );
 
-router.get('/profile', authenticateToken, getProfile);
+router.get('/profile', authUser, getProfile);
 
 /* Logout user - to be implemented */
 
-router.get("/logout", authenticateToken, async (req, res) => {
+router.get("/logout", authUser, async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(400).json({ message: "No token" });

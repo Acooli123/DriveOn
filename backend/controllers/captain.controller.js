@@ -44,7 +44,53 @@ const captainController = {
       console.error("Captain error:", err);
       res.status(400).json({ message: err.message });
     }
+  },
+
+  loginCaptain: async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const captain = await Captain.findOne({ email });
+    if (!captain) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await captain.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = captain.generateAuthToken();
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      captain
+    });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error" });
   }
+},
+
+getProfile: async (req, res) => {
+  try {
+    console.log("DECODED TOKEN:", req.captain);
+
+    const captain = await Captain.findById(req.captain.id);
+
+    if (!captain) {
+      return res.status(404).json({ message: "Captain not found" });
+    }
+
+    res.status(200).json({ captain });
+  } catch (err) {
+    console.error("Profile error:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
 };
 
 export default captainController;
