@@ -4,7 +4,7 @@ import { useState } from "react";
 import {useNavigate} from 'react-router-dom';
 import axios from "axios";
 import { useContext } from "react";
-import { UserDataContext as UserContext } from "../context/UserDataContext.jsx";
+import { UserDataContext } from "../context/UserDataContext.jsx";
 
 const UserSignup = () => {
   const [email, setemail] = useState("");
@@ -15,7 +15,7 @@ const UserSignup = () => {
 
   const navigate = useNavigate();
 
-  const { user, setuser } = useContext(UserContext);
+  const { user, setuser } = useContext(UserDataContext);
 
   const submitHandler = async(e) => {
     e.preventDefault();
