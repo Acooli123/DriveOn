@@ -1,9 +1,9 @@
 import express from 'express';
-import { body, validationResult } from "express-validator";
-import userModel from '../models/user.model.js';
-import { createUser } from '../services/user.services.js';
+import pkg from "express-validator";
+const { body } = pkg;
+
 import { authUser } from '../middlewares/auth.middileware.js';
-import { getProfile } from '../controllers/user.controllers.js';
+import { getProfile, registerUser, loginUser } from '../controllers/user.controllers.js';
 import BlacklistToken from "../models/blacklistToken.model.js";
 
 //import blacklistTokenModel from '../models/blacklistToken.model.js';
@@ -15,31 +15,6 @@ router.get("/", (req, res) => {
 });
 
 /* Register user */
-const registerUser = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { fullname, email, password } = req.body;
-    const user = await createUser({
-      firstname: fullname.firstname,
-      lastname: fullname.lastname,
-      email,
-      password
-    });
-
-    res.status(201).json({
-      message: "User registered successfully",
-      user
-    });
-  } catch (err) {
-    console.error("Register error:", err.message);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 router.post('/register',
     body('fullname.firstname').isLength({min:3}).withMessage('First name must be at least 3 characters long'),
     body('fullname.lastname').optional().isLength({min:3}).withMessage('Last name must be at least 3 characters long'),
@@ -49,30 +24,6 @@ router.post('/register',
 );
 
 /* Login user */
-const loginUser = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const { email, password } = req.body;
-    const user = await userModel.findOne({ email }).select('+password');
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    const token = user.generateAuthToken();
-    res.status(200).json({ token, user });
-  } catch (err) {
-    console.error("Login error:", err.message);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 router.post('/login',
     body('email').isEmail().withMessage('Invalid email address'),
     body('password').isLength({min:6}).withMessage('Password must be at least 6 characters long'),

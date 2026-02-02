@@ -72,7 +72,7 @@ const CaptainSignup = () => {
             className="border border-gray-300 rounded-md p-2 w-80 mt-2"
           />
           <button className="flex items-center justify-center w-80 mt-3 bg-black text-white py-2 rounded">
-            Register
+            Create account
           </button>
         </div>
         <p className="text-center mt-2">

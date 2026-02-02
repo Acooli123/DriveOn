@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import {useNavigate} from 'react-router-dom';
+import axios from "axios";
+import { useContext } from "react";
+import { UserDataContext as UserContext } from "../context/UserDataContext.jsx";
 
 const UserSignup = () => {
   const [email, setemail] = useState("");
@@ -8,16 +12,31 @@ const UserSignup = () => {
   const [firstname, setfirstname] = useState("");
   const [lastname, setlastname] = useState("");
   const [userData, setuserData] = useState("");
-  const submitHandler = (e) => {
+
+  const navigate = useNavigate();
+
+  const { user, setuser } = useContext(UserContext);
+
+  const submitHandler = async(e) => {
     e.preventDefault();
-    setuserData({
+    const newUser = {
       fullname: {
         firstname: firstname,
         lastname: lastname,
       },
       email: email,
       password: password,
-    });
+    }
+
+    const response = await axios.post(`${import.meta.env.BASE_URL}/users/register`, newUser)
+     if (response.status === 201) {
+      const data = response.data
+      setuser(data.user)
+      localStorage.setItem('token', data.token)
+      navigate('/home')
+    }
+
+    setuserData(newUser);
     setemail("");
     setpassword("");
     setfirstname("");
@@ -71,7 +90,7 @@ const UserSignup = () => {
             className="border border-gray-300 rounded-md p-2 w-80 mt-2"
           />
           <button className="flex items-center justify-center w-80 mt-3 bg-black text-white py-2 rounded">
-            Register
+            Create account
           </button>
         </div>
         <p className="text-center mt-2">
