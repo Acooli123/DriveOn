@@ -11,11 +11,11 @@ const UserSignup = () => {
   const [password, setpassword] = useState("");
   const [firstname, setfirstname] = useState("");
   const [lastname, setlastname] = useState("");
-  const [userData, setuserData] = useState("");
+  const [userData, setUserData] = useState({});
 
   const navigate = useNavigate();
 
-  const { user, setuser } = useContext(UserDataContext);
+  const { user, setUser } = useContext(UserDataContext);
 
   const submitHandler = async(e) => {
     e.preventDefault();
@@ -28,20 +28,27 @@ const UserSignup = () => {
       password: password,
     }
 
-    const response = await axios.post(`${import.meta.env.BASE_URL}/users/register`, newUser)
-     if (response.status === 201) {
-      const data = response.data
-      setuser(data.user)
-      localStorage.setItem('token', data.token)
-      navigate('/home')
-    }
+    try {
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_BASE_URL}/users/register`,
+    newUser
+  )
 
-    setuserData(newUser);
+  if (response.status === 201) {
+    const data = response.data
+    setUser(data.user)
+    localStorage.setItem("token", data.token)
+    navigate("/login")
+  }
+
+} catch (error) {
+  console.log("Backend error:", error.response.data)
+}
+
     setemail("");
     setpassword("");
     setfirstname("");
     setlastname("");
-    console.log(userData);
   };
   return (
     <div className="flex flex-col p-7 justify-between h-screen">

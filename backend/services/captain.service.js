@@ -32,9 +32,12 @@ export const createCaptain = async ({
   if (existingCaptain) throw new Error("Captain already exists");
 
   const newCaptain = new Captain({
-    fullName: { firstName, lastName },
+    fullName: {
+      firstName,
+      lastName
+    },
     email,
-    password, // hashed by pre-save hook
+    password,
     vehicle: {
       color,
       licensePlate,

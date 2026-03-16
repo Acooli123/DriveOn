@@ -2,7 +2,7 @@ import { useState } from "react";
 import { UserDataContext } from "./UserDataContext";
 
 const UserContext = ({ children }) => {
-  const [user, setuser] = useState({
+  const [user, setUser] = useState({
     fullname: {
       firstname: "",
       lastname: "",
@@ -11,7 +11,7 @@ const UserContext = ({ children }) => {
   });
 
   return (
-    <UserDataContext.Provider value={{ user, setuser }}>
+    <UserDataContext.Provider value={{ user, setUser }}>
       {children}
     </UserDataContext.Provider>
   );
