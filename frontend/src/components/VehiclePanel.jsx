@@ -14,14 +14,14 @@ const VehiclePanel = (props) => {
       </h5>
       <h3 className="text-2xl font-bold mb-5">Choose a Vehicle</h3>
       <div
-  onClick={() => {
-    props.setconfirmVehiclePanel(true);
-    props.setShowVehiclePanel(false);
-  }}
-  className="flex border-2 active:border-black rounded-xl mb-2 p-3 bg-[rgb(186,207,116)] items-center justify-between"
+        onClick={() => {
+            props.setconfirmVehiclePanel(true);
+            props.setShowVehiclePanel(false);
+        }}
+        className="flex border-2 active:border-black rounded-xl mb-2 p-3 bg-[rgb(186,207,116)] items-center justify-between"
 >
         <img
-          className="h-20"
+          className="h-12"
           src="https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=956/height=538/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy8yOWZiYjhiMC03NWIxLTRlMmEtODUzMy0zYTM2NGU3MDQyZmEucG5n"
           alt=""
         />
@@ -40,10 +40,10 @@ const VehiclePanel = (props) => {
 
       <div onClick={()=>{
         props.setconfirmVehiclePanel(true)
-        // props.setShowVehiclePanel(false)
+        props.setShowVehiclePanel(false)
       }} className="flex border-2 active:border-black rounded-xl mb-2 p-3 bg-[rgb(186,207,116)] items-center justify-between">
         <img
-          className="h-20"
+          className="h-12"
           src="https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=552/height=368/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy85NWEwNTUzOC05MThiLTQyZDgtYWZlNy0zYzkyMzI1ZjJmZDQucG5n"
           alt=""
         />
@@ -62,7 +62,7 @@ const VehiclePanel = (props) => {
 
       <div onClick={()=>{
         props.setconfirmVehiclePanel(true)
-        // props.setShowVehiclePanel(false)
+        props.setShowVehiclePanel(false)
       }} className="flex border-2 active:border-black rounded-xl mb-2 p-3 bg-[rgb(186,207,116)] items-center justify-between">
         <img
           className="h-20"
@@ -71,28 +71,31 @@ const VehiclePanel = (props) => {
         />
         <div className="ml-2 w-1/2">
           <h4 className="font-semibold text-lg">
-            DriveOn-Shuttle{" "}
+            DriveOn-Shuttle
             <span>
-              <i className="ri-user-3-fill ml-3"></i>5{" "}
+              <i className="ri-user-3-fill ml-3"></i>5
             </span>
           </h4>
           <h5>2 mins away</h5>
           <p className="font-medium text-sm">Affordable, compact rides</p>
         </div>
-        <h2 className="text-2xl font-semibold">₹60.40</h2>
+        <h2 className="text-2xl font-semibold">₹100.40</h2>
       </div>
 
-      <div className="flex border-2 active:border-black rounded-xl mb-2 p-3 bg-[rgb(186,207,116)] items-center justify-between">
+      <div onClick={()=>{
+        props.setconfirmVehiclePanel(true)
+        props.setShowVehiclePanel(false)
+      }} className="flex border-2 active:border-black rounded-xl mb-2 p-3 bg-[rgb(186,207,116)] items-center justify-between">
         <img
-          className="h-20"
+          className="h-12"
           src="https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=552/height=368/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy9mY2RkZWNhYS0yZWVlLTQ4ZmUtODdmMC02MTRhYTdjZWU3ZDMucG5n"
           alt=""
         />
         <div className="ml-2 w-1/2">
           <h4 className="font-semibold text-lg">
-            DriveOn-Moto{" "}
+            DriveOn-Moto
             <span>
-              <i className="ri-user-3-fill ml-3"></i>1{" "}
+              <i className="ri-user-3-fill ml-3"></i>1
             </span>
           </h4>
           <h5>2 mins away</h5>

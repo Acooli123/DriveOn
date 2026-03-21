@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-
+import mapRoutes from './routes/maps.routes.js';
+import rideRoutes from './routes/ride.routes.js';
 dotenv.config();
 
 console.log("App file loaded");   // 👈 add this
@@ -23,5 +24,7 @@ app.get("/", (req, res) => {
 
 app.use('/users', userRoutes);
 app.use('/captains', captainRoutes);
+app.use('/maps', mapRoutes);
+app.use('/rides', rideRoutes);
 
 export default app;

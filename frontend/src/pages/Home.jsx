@@ -12,6 +12,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 const Home = () => {
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
+  const [activeInput, setActiveInput] = useState(null);
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
   const vehiclePanelRef = useRef(null);
@@ -26,6 +27,32 @@ const Home = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    // Open vehicle panel when both pickup and dropoff have values
+    if (pickupLocation && dropoffLocation) {
+      setShowVehiclePanel(true)
+    }
+  }
+
+  // Handle pickup location change
+  const handlePickupChange = (e) => {
+    const value = e.target.value
+    setPickupLocation(value)
+    setActiveInput('pickup')
+    // Close vehicle panel if either field is empty
+    if (!value || !dropoffLocation) {
+      setShowVehiclePanel(false)
+    }
+  }
+
+  // Handle dropoff location change
+  const handleDropoffChange = (e) => {
+    const value = e.target.value
+    setDropoffLocation(value)
+    setActiveInput('dropoff')
+    // Close vehicle panel if either field is empty
+    if (!value || !pickupLocation) {
+      setShowVehiclePanel(false)
+    }
   }
 
   useGSAP(function() {   
@@ -104,7 +131,7 @@ useGSAP(function() {
       <div onClick={()=>{
         setShowVehiclePanel(false)
       }} className="w-screen h-screen">
-        <img 
+        <img className="w-full h-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
           alt="DriveOn map image"
         />
@@ -119,9 +146,18 @@ useGSAP(function() {
             <input
               onClick={()=>{
                 setShowMap(true)
+                setActiveInput('pickup')
               }}
               value={pickupLocation}
-              onChange={(e) => setPickupLocation(e.target.value)}
+              onChange={handlePickupChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  if (pickupLocation && dropoffLocation) {
+                    setShowVehiclePanel(true)
+                  }
+                }
+              }}
               className="bg-[#eee] px-8 py-2 text-lg rounded-lg"
               type="text"
               placeholder="Add a pick-up location"
@@ -129,9 +165,18 @@ useGSAP(function() {
             <input
               onClick={()=>{
                 setShowMap(true)
+                setActiveInput('dropoff')
               }}
               value={dropoffLocation}
-              onChange={(e) => setDropoffLocation(e.target.value)}
+              onChange={handleDropoffChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  if (pickupLocation && dropoffLocation) {
+                    setShowVehiclePanel(true)
+                  }
+                }
+              }}
               className="bg-[#eee] px-8 py-2 text-lg rounded-lg"
               type="text"
               placeholder="Add a drop-off location"
@@ -139,7 +184,17 @@ useGSAP(function() {
           </form>
         </div>
         <div ref={panelRef} className="bg-white h-0">
-            <LocationSearchPanel panelOpen = {showMap} setPanelOpen = {setShowMap} vehiclePanel = {showVehiclePanel} setVehiclePanel={setShowVehiclePanel}/>
+            <LocationSearchPanel 
+                panelOpen = {showMap} 
+                setPanelOpen = {setShowMap} 
+                vehiclePanel = {showVehiclePanel} 
+                setVehiclePanel={setShowVehiclePanel}
+                pickupLocation={pickupLocation}
+                setPickupLocation={setPickupLocation}
+                dropoffLocation={dropoffLocation}
+                setDropoffLocation={setDropoffLocation}
+                activeInput={activeInput}
+            />
         </div>
       </div >
       <div ref={vehiclePanelRef} className="fixed bg-white z-10 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">

@@ -124,6 +124,100 @@ This endpoint retrieves the profile of the authenticated user.
     {
       "message": "Server error"
     }
+    ```
+
+## GET /rides/get-fare
+
+### Description
+This endpoint calculates and returns the fare estimates for different vehicle types between a pickup location and a destination. It uses the Google Maps API to determine the distance and duration, then calculates fares based on vehicle-specific pricing.
+
+### Request
+- **Method**: GET
+- **URL**: `/rides/get-fare`
+- **Headers**: `Authorization: Bearer <token>` (required)
+- **Query Parameters**:
+  - `pickup` (string, required): The pickup location address. Must be at least 2 characters long.
+  - `destination` (string, required): The destination address. Must be at least 2 characters long.
+
+Example request URL:
+```
+GET /rides/get-fare?pickup=Central%20Park&destination=Times%20Square
+```
+
+### Response
+
+#### Success Response
+- **Status Code**: 200 OK
+- **Content-Type**: `application/json`
+- **Body**:
+  ```json
+  {
+    "bike": 45,
+    "nonAcCar": 120,
+    "acCar": 180,
+    "shuttle": 85,
+    "distance": "5.25",
+    "duration": 15
+  }
+  ```
+
+**Response Fields:**
+- `bike` (integer): Estimated fare for a bike in the local currency.
+- `nonAcCar` (integer): Estimated fare for a non-A/C car.
+- `acCar` (integer): Estimated fare for an A/C car.
+- `shuttle` (integer): Estimated fare for a shuttle.
+- `distance` (string): Distance in kilometers.
+- `duration` (integer): Estimated travel time in minutes.
+
+#### Fare Calculation Details
+The fare is calculated using the following formula for each vehicle type:
+
+```
+Total Fare = Base Fare + (Distance in km × Per km Rate) + (Duration in minutes × Per minute Rate)
+```
+
+The calculated fare is compared against the minimum fare, and the higher value is used.
+
+**Fare Configuration:**
+
+| Vehicle Type | Base Fare | Per Km Rate | Per Minute Rate | Minimum Fare |
+|--------------|-----------|-------------|-----------------|---------------|
+| Bike         | 20        | 8           | 1               | 30            |
+| Non-A/C Car  | 50        | 18          | 3               | 100           |
+| A/C Car      | 80        | 22          | 4               | 150           |
+| Shuttle      | 40        | 10          | 1.5             | 60            |
+
+#### Error Responses
+- **Status Code**: 400 Bad Request (Validation Errors)
+  - **Body**:
+    ```json
+    {
+      "errors": [
+        {
+          "msg": "Pickup is required",
+          "param": "pickup",
+          "location": "query"
+        }
+      ]
+    }
+    ```
+
+- **Status Code**: 401 Unauthorized
+  - **Body**:
+    ```json
+    {
+      "message": "Unauthorized"
+    }
+    ```
+
+- **Status Code**: 500 Internal Server Error
+  - **Body**:
+    ```json
+    {
+      "message": "Failed to calculate fare",
+      "error": "Error message here"
+    }
+    ```
 
 ## POST /captains/register
 
