@@ -161,7 +161,11 @@ useGSAP(function() {
     }
     
     try {
-      // Close the location search panel but keep it visible at bottom
+      // Close the location search panel and clear locations when Get Fare is clicked
+      const pickup = pickupLocation
+      const dropoff = dropoffLocation
+      setPickupLocation('')
+      setDropoffLocation('')
       setShowMap(false);
       setFareLoading(true);
       
@@ -173,7 +177,7 @@ useGSAP(function() {
         return;
       }
       
-      console.log('Fetching fare for:', pickupLocation, dropoffLocation);
+      console.log('Fetching fare for:', pickup, dropoff);
       console.log('API URL:', '/rides/get-fare');
       
       const token = localStorage.getItem('token');
@@ -187,8 +191,8 @@ useGSAP(function() {
       
       const response = await axios.get('/rides/get-fare', { 
         params: {
-          pickup: pickupLocation,
-          destination: dropoffLocation
+          pickup: pickup,
+          destination: dropoff
         },
         headers: {
           Authorization: `Bearer ${token}`
