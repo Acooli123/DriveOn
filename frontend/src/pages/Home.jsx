@@ -21,7 +21,7 @@ const Home = () => {
   const panelCloseRef = useRef(null);
   const vehiclePanelRef = useRef(null);
   const confirmedVehiclePanelRef = useRef(null);
-  const vehiclefoundPanelRef = useRef(null); 
+  const lookingForDriverPanelRef = useRef(null); 
   const driverfoundPanelRef = useRef(null); 
   const [showMap, setShowMap] = useState(false);
   const [showVehiclePanel, setShowVehiclePanel] = useState(false);
@@ -30,8 +30,11 @@ const Home = () => {
   const [driverFound, setdriverFound] = useState(false)
   const [fare, setFare] = useState({});
   const [fareLoading, setFareLoading] = useState(false);
-  const [bothLocationsSet, setBothLocationsSet] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  
+  // State variables to preserve locations for display in Confirm Vehicle panel
+  const [savedPickupLocation, setSavedPickupLocation] = useState('');
+  const [savedDropoffLocation, setSavedDropoffLocation] = useState('');
 
   // Handle pickup location change
   const handlePickupChange = (e) => {
@@ -43,12 +46,6 @@ const Home = () => {
     // Close vehicle panel if either field is empty
     if (!value || !dropoffLocation) {
       setShowVehiclePanel(false)
-    }
-    // Check if both locations are set
-    if (value && dropoffLocation) {
-      setBothLocationsSet(true)
-    } else {
-      setBothLocationsSet(false)
     }
   }
 
@@ -62,12 +59,6 @@ const Home = () => {
     // Close vehicle panel if either field is empty
     if (!value || !pickupLocation) {
       setShowVehiclePanel(false)
-    }
-    // Check if both locations are set
-    if (pickupLocation && value) {
-      setBothLocationsSet(true)
-    } else {
-      setBothLocationsSet(false)
     }
   }
 
@@ -109,18 +100,18 @@ const Home = () => {
       })
     }else{
       gsap.to(confirmedVehiclePanelRef.current, {
-        transform:"translateY(100%)"
+        transform:"translateY(120%)"
       })
     }
   }, [confirmVehiclePanel])
 
   useGSAP(function() {
     if(vehiclefound){
-      gsap.to(vehiclefoundPanelRef.current, {
+      gsap.to(lookingForDriverPanelRef.current, {
         transform:"translateY(0)"
       })
     }else{
-      gsap.to(vehiclefoundPanelRef.current, {
+      gsap.to(lookingForDriverPanelRef.current, {
         transform:"translateY(100%)"
       })
     }
@@ -161,9 +152,15 @@ useGSAP(function() {
     }
     
     try {
-      // Close the location search panel and clear locations when Get Fare is clicked
+      // Store locations in temporary variables before clearing state
       const pickup = pickupLocation
       const dropoff = dropoffLocation
+      
+      // Save locations for display in Confirm Vehicle panel
+      setSavedPickupLocation(pickup)
+      setSavedDropoffLocation(dropoff)
+      
+      // Clear the input fields after storing the values
       setPickupLocation('')
       setDropoffLocation('')
       setShowMap(false);
@@ -206,6 +203,7 @@ useGSAP(function() {
       setFare(response.data);
       console.log('Fare state set, showing vehicle panel');
       setShowVehiclePanel(true);
+      setconfirmVehiclePanel(false);
     } catch (error) {
       console.error('Failed to get fare:', error);
       console.error('Error message:', error.message);
@@ -259,14 +257,14 @@ useGSAP(function() {
           alt="DriveOn map image"
         />
       </div>
-      <div className="h-screen flex flex-col justify-end absolute top-0 w-full">
-        <div className="h-[30%] p-14 bg-white relative">
+      <div className="flex flex-col justify-end absolute bottom-0 w-full">
+        <div className={`p-6 bg-white relative ${showVehiclePanel || confirmVehiclePanel || vehiclefound || driverFound ? 'hidden' : ''}`}>
           <h5 ref={panelCloseRef} onClick={() => setShowMap(false)} className="top-12 left-7 opacity-0 absolute text-xl"><i className="ri-arrow-down-wide-line"></i></h5>
           <h4 className="text-3xl font-semibold">Find a trip</h4>
           
           <form className="gap-3 flex flex-col mt-4" 
           onSubmit={(e) => {e.preventDefault();}}>
-            <div className="line absolute h-16 w-1 top-[45%] bg-gray-800 left-20 rounded-full"></div>
+            <div className="line absolute h-16 w-1 top-[35%] mr-2 bg-gray-800 left-20 rounded-full"></div>
             <input
               onClick={()=>{
                 setShowMap(true)
@@ -275,7 +273,7 @@ useGSAP(function() {
               value={pickupLocation}
               onChange={handlePickupChange}
               
-              className="bg-[#eee] px-8 py-2 text-lg rounded-lg"
+              className="bg-[#eee] ml-10 px-8 py-2 text-lg rounded-lg"
               type="text"
               placeholder="Add a pick-up location"
             />
@@ -287,7 +285,7 @@ useGSAP(function() {
               value={dropoffLocation}
               onChange={handleDropoffChange}
            
-              className="bg-[#eee] px-8 py-2 text-lg rounded-lg"
+              className="bg-[#eee] ml-10 px-8 py-2 text-lg rounded-lg"
               type="text"
               placeholder="Add a drop-off location"
             />
@@ -296,12 +294,12 @@ useGSAP(function() {
             type="button"
             onClick={findTrip}
             disabled={fareLoading}
-            className="ml-1 bg-black text-white px-4 py-2 mt-5 rounded-lg mb-2 w-full disabled:bg-gray-600"
+            className="ml-10 bg-black text-white px-2 py-2 mt-5 rounded-lg mb-2 w-80 disabled:bg-gray-600"
           >
             {fareLoading ? 'Fetching Fare...' : 'Get Fare'}
           </button>
         </div>
-        <div ref={panelRef} className="bg-white h-0">
+        <div ref={panelRef} className="bg-white h-0 overflow-hidden">
             <LocationSearchPanel 
                 panelOpen = {showMap || pickupLocation || dropoffLocation} 
                 setPanelOpen = {setShowMap} 
@@ -316,7 +314,7 @@ useGSAP(function() {
             />
         </div>
       </div >
-      <div ref={vehiclePanelRef} className="fixed bg-white z-10 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
+      <div ref={vehiclePanelRef} className="fixed bg-white z-30 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
         <VehiclePanel 
           fare={fare} 
           setconfirmVehiclePanel = {setconfirmVehiclePanel} 
@@ -325,22 +323,31 @@ useGSAP(function() {
         />
       </div>
 
-      <div ref={confirmedVehiclePanelRef} className="fixed bg-white z-20 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
+      <div ref={confirmedVehiclePanelRef} className="fixed bg-white z-[999] bottom-0 left-0 w-full">
         <ConfirmedVehicle 
           setconfirmVehiclePanel = {setconfirmVehiclePanel} 
           setvehiclefound={setvehiclefound}
           selectedVehicle={selectedVehicle}
           fare={fare}
-          pickupLocation={pickupLocation}
-          dropoffLocation={dropoffLocation}
+          pickupLocation={savedPickupLocation}
+          dropoffLocation={savedDropoffLocation}
         />
       </div>
 
-      <div ref={vehiclefoundPanelRef} className="fixed bg-white z-20 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
-        <LookingForDriver setvehiclefound={setvehiclefound}/>
+      <div 
+        ref={lookingForDriverPanelRef} 
+        className="fixed bg-white z-50 bottom-0 translate-y-full px-3 py-6 pt-12 w-full"
+      >
+        <LookingForDriver 
+          setvehiclefound={setvehiclefound}
+          pickupLocation={savedPickupLocation}
+          dropoffLocation={savedDropoffLocation}
+          selectedVehicle={selectedVehicle}
+          fare={fare}
+        />
       </div>
 
-      <div ref={driverfoundPanelRef} className="fixed bg-white z-20 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
+      <div ref={driverfoundPanelRef} className="fixed bg-white z-10 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
         <WaitingForDriver setdriverFound={setdriverFound}/>
       </div>
     </div>

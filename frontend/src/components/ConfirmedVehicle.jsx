@@ -28,7 +28,7 @@ const ConfirmedVehicle = (props) => {
       </h5>
       <h3 className="text-2xl font-bold mb-5">Confirm Your Ride</h3>
 
-      <div className='flex flex-col justify-between items-center'>
+      <div className='flex flex-col gap-2'>
         <img 
           className='h-24 w-auto object-contain' 
           src={vehicleImage} 
@@ -74,7 +74,7 @@ const ConfirmedVehicle = (props) => {
               props.setvehiclefound(true)
               props.setconfirmVehiclePanel(false);
           }} 
-          className='w-full p-2 mt-2 bg-green-400 rounded-lg text-xl text-white font-semibold'
+          className='w-full p-3 mt-2 bg-green-400 rounded-lg text-xl text-white font-semibold'
         >
           Confirm
         </button>

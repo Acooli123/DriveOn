@@ -1,6 +1,20 @@
 import React from 'react'
 
 const LookingForDriver = (props) => {
+  const { selectedVehicle, fare, pickupLocation, dropoffLocation } = props;
+
+  // Format fare
+  const formatFare = (fareValue) => {
+    if (!fareValue && fareValue !== 0) return "--";
+    return `₹${fareValue}`;
+  };
+
+   // Get the vehicle image, name and fare
+  const vehicleImage = selectedVehicle?.image || "https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=956/height=538/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy8yOWZiYjhiMC03NWIxLTRlMmEtODUzMy0zYTM2NGU3MDQyZmEucG5n";
+  const vehicleName = selectedVehicle?.name || "Vehicle";
+  const vehicleFare = selectedVehicle?.fare || fare?.bike || fare?.nonAcCar || fare?.acCar || fare?.shuttle;
+  // const distance = fare?.distance || "--";
+  // const duration = fare?.duration || "--";
   return (
     <div>
       <h5
@@ -16,7 +30,8 @@ const LookingForDriver = (props) => {
         {/* Left side (images close together) */}
         <div className="flex items-center gap-0.3">
             <img className="h-12" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEoB8px2hd20zM9etevT9XY9DnpQdezUVhHQ&s"alt=""/>
-            <img className="h-12" src="https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=956/height=538/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy8yOWZiYjhiMC03NWIxLTRlMmEtODUzMy0zYTM2NGU3MDQyZmEucG5n"alt=""/>
+            <img className="h-12" src={vehicleImage} 
+          alt={vehicleName} />
         </div>
 
         {/* Right side */}
@@ -34,21 +49,21 @@ const LookingForDriver = (props) => {
             <div className='flex items-center gap-5 p-2 border-b-2'>
                 <i className="text-xl font-semibold ri-map-pin-user-fill"></i>
                 <div>
-                    <h3 className='text-lg font-medium'>583, Anada Negi Lane Road</h3>
-                    <p className='text-sm -mt-1 text-gray-600'>Baghbazar, Kolkata, West Bengal 700003</p>
+                    <h3 className='text-lg font-medium'>Pickup Location</h3>
+                    <p className='text-sm -mt-1 text-gray-600'>{pickupLocation}</p>
                 </div>
             </div>
             <div className='flex items-center gap-5 p-2 border-b-2'>
                 <i className="text-xl ri-map-pin-fill"></i>
                 <div>
-                    <h3 className='text-lg font-medium'>Hare School</h3>
-                    <p className='text-sm -mt-1 text-gray-600'>87, College St, Calcutta University, College Square, Kolkata, West Bengal 700073</p>
+                    <h3 className='text-lg font-medium'>Drop-off Location</h3>
+                    <p className='text-sm -mt-1 text-gray-600'>{dropoffLocation}</p>
                 </div>
             </div>
             <div className='flex items-center gap-5 p-2'>
                 <i className="text-xl font-semibold ri-hand-coin-fill"></i>
                 <div>
-                    <h3 className='text-lg font-medium'>₹145.40</h3>
+                    <h3 className='text-lg font-medium'>{formatFare(vehicleFare)}</h3>
                     <p className='text-sm -mt-1 text-gray-600'>Cash, UPI</p>
                 </div>
             </div>
