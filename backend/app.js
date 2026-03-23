@@ -13,7 +13,13 @@ import userRoutes from './routes/user.routes.js';
 import captainRoutes from './routes/captain.routes.js';
 connectDB();
 
-app.use(cors());
+// Configure CORS to allow requests from frontend
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

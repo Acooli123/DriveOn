@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
+// Use the same axios instance with baseURL configured
+
 const LocationSearchPanel = (props) => {
     const [suggestions, setSuggestions] = useState([])
     const [loading, setLoading] = useState(false)
@@ -51,15 +53,12 @@ const LocationSearchPanel = (props) => {
         }
         setSuggestions([])
         
-        // Only open vehicle panel if both pickup and dropoff locations are set
-        const pickup = props.activeInput === 'pickup' ? suggestion : props.pickupLocation
-        const dropoff = props.activeInput === 'dropoff' ? suggestion : props.dropoffLocation
+        // Don't close the panel - let user continue to enter dropoff location
+        // The panel will only close when user clicks "Get Fare" or manually closes it
         
-        if (pickup && dropoff) {
-            props.setVehiclePanel(true)
-            props.setPanelOpen(false)
-        } else {
-            props.setVehiclePanel(false)
+        // Clear fare when locations change
+        if (props.onLocationChange) {
+            props.onLocationChange()
         }
     }
 
@@ -91,7 +90,7 @@ const LocationSearchPanel = (props) => {
                         onClick={() => handleSuggestionClick(suggestion)}
                         className='flex items-center gap-4 my-2 border-gray border-2 active:border-black rounded-lg justify-start cursor-pointer'
                     >
-                        <h2 className='bg-[#eee] h-10 w-10 ml-3 flex items-center justify-center rounded-full'>
+                        <h2 className='bg-[#eee] h-10 w-10 ml-5 flex items-center justify-center rounded-full'>
                             <i className="ri-map-pin-fill text-xl"></i>
                         </h2>
                         <h4 className="font-medium">
@@ -110,15 +109,11 @@ const LocationSearchPanel = (props) => {
                                 props.setDropoffLocation(location)
                             }
                             
-                            // Only open vehicle panel if both pickup and dropoff locations are set
-                            const pickup = props.activeInput === 'pickup' ? location : props.pickupLocation
-                            const dropoff = props.activeInput === 'dropoff' ? location : props.dropoffLocation
+                            // Don't close the panel - let user continue to enter dropoff location
                             
-                            if (pickup && dropoff) {
-                                props.setVehiclePanel(true)
-                                props.setPanelOpen(false)
-                            } else {
-                                props.setVehiclePanel(false)
+                            // Clear fare when locations change
+                            if (props.onLocationChange) {
+                                props.onLocationChange()
                             }
                         }}
                         className='flex items-center gap-4 my-2 border-gray border-2 active:border-black rounded-lg justify-start cursor-pointer'
