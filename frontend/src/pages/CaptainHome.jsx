@@ -1,11 +1,13 @@
 import React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { useGSAP} from '@gsap/react';
 import { gsap } from "gsap";
 import { Link } from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import RidePopUp from '../components/RidePopUp'
 import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
+import { SocketDataContext } from '../context/SocketDataContext';
+import { CaptainDataContext } from '../context/CaptainContext';
 
 const CaptainHome = () => {
 
@@ -39,12 +41,45 @@ const CaptainHome = () => {
     }
   }, [confirmRidePopUpPanel])
 
+  const socketContext = useContext(SocketDataContext);
+  const captainContext = useContext(CaptainDataContext);
+
+  const socket = socketContext?.socket;
+  const captain = captainContext?.captain;
+
+  useEffect(() => {
+    if (socket && captain?._id) {
+      // Only emit join when socket is connected
+      const emitJoin = () => {
+        socket.emit("join", {
+          userType: "captain",
+          userId: captain._id
+        });
+
+        console.log("Sending join from captain:", {
+          userId: captain._id,
+          userType: "captain"
+        });
+      };
+
+      if (socket.connected) {
+        emitJoin();
+      } else {
+        socket.on('connect', emitJoin);
+      }
+
+      return () => {
+        socket.off('connect', emitJoin);
+      };
+    }
+  }, [captain, socket]);
+
   return (
     <div className="h-screen">
 
       {/* Logout Button */}
       <Link 
-        to="/captain-home" 
+        to="/captains/logout" 
         className="fixed p-3 right-2 top-2 h-12 w-12 bg-white flex items-center justify-center rounded-full shadow-md"
       >
         <i className="text-2xl ri-logout-box-r-line"></i>

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CaptainDataContext } from "../context/CaptainDataContext";
+import { CaptainDataContext } from '../context/CaptainContext';
 
 const CaptainLogin = () => {
   const [email, setEmail] = useState("");
@@ -27,8 +27,24 @@ const CaptainLogin = () => {
       if (response.status === 200) {
         const data = response.data;
 
-        setCaptain(data.captain);
+        // Store token first
         localStorage.setItem("token", data.token);
+
+        // Fetch fresh captain profile to ensure all details are properly set
+        try {
+          const profileResponse = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/captains/profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${data.token}`
+              }
+            }
+          );
+          setCaptain(profileResponse.data.captain);
+        } catch {
+          // Fallback to login response data if profile fetch fails
+          setCaptain(data.captain);
+        }
 
         navigate("/captain-home");
       }

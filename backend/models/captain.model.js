@@ -31,6 +31,10 @@ const captainSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    socketConnectionCount: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ['available', 'unavailable', 'on-duty'],

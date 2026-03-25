@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from 'axios'
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 
 // Configure axios base URL
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -12,6 +12,8 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedVehicle from "../components/ConfirmedVehicle";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+import { SocketDataContext } from "../context/SocketDataContext";
+import { UserDataContext } from "../context/UserDataContext.jsx";
 
 const Home = () => {
   const [pickupLocation, setPickupLocation] = useState("");
@@ -31,10 +33,45 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [fareLoading, setFareLoading] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+
+  const socketContext = useContext(SocketDataContext);
+  const userContext = useContext(UserDataContext);
+  
+  const socket = socketContext?.socket;
+  const user = userContext?.user;
   
   // State variables to preserve locations for display in Confirm Vehicle panel
   const [savedPickupLocation, setSavedPickupLocation] = useState('');
   const [savedDropoffLocation, setSavedDropoffLocation] = useState('');
+
+  useEffect(() => {
+    if (socket && user?._id) {
+      // Only emit join when socket is connected
+      const emitJoin = () => {
+        socket.emit("join", {
+          userType: "user",
+          userId: user._id
+        });
+
+        console.log("Sending join:", {
+          userId: user._id,
+          userType: "user"
+        });
+      };
+
+      if (socket.connected) {
+        emitJoin();
+      } else {
+        socket.on('connect', emitJoin);
+      }
+
+      return () => {
+        socket.off('connect', emitJoin);
+      };
+    }
+
+  }, [user, socket]);
+
 
   // Handle pickup location change
   const handlePickupChange = (e) => {
@@ -314,7 +351,7 @@ useGSAP(function() {
             />
         </div>
       </div >
-      <div ref={vehiclePanelRef} className="fixed bg-white z-30 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
+      <div ref={vehiclePanelRef} className={`fixed bg-white z-30 bottom-0 translate-y-full px-3 py-6 pt-12 w-full ${showVehiclePanel ? 'block' : 'hidden'}`}>
         <VehiclePanel 
           fare={fare} 
           setconfirmVehiclePanel = {setconfirmVehiclePanel} 
@@ -323,10 +360,10 @@ useGSAP(function() {
         />
       </div>
 
-      <div ref={confirmedVehiclePanelRef} className="fixed bg-white z-[999] bottom-0 left-0 w-full">
+      <div ref={confirmedVehiclePanelRef} className={`fixed bg-white z-[999] bottom-0 left-0 w-full ${confirmVehiclePanel ? 'block' : 'hidden'}`}>
         <ConfirmedVehicle 
           setconfirmVehiclePanel = {setconfirmVehiclePanel} 
-          setvehiclefound={setvehiclefound}
+          setdriverFound={setdriverFound}
           selectedVehicle={selectedVehicle}
           fare={fare}
           pickupLocation={savedPickupLocation}
@@ -334,9 +371,19 @@ useGSAP(function() {
         />
       </div>
 
+      <div ref={driverfoundPanelRef} className={`fixed bg-white z-[999] bottom-0 left-0 w-full ${driverFound ? 'block' : 'hidden'}`}>
+        <WaitingForDriver 
+          setdriverFound={setdriverFound}
+          pickupLocation={savedPickupLocation}
+          dropoffLocation={savedDropoffLocation}
+          selectedVehicle={selectedVehicle}
+          fare={fare}
+        />
+      </div>
+
       <div 
         ref={lookingForDriverPanelRef} 
-        className="fixed bg-white z-50 bottom-0 translate-y-full px-3 py-6 pt-12 w-full"
+        className={`fixed bg-white z-50 bottom-0 translate-y-full px-3 py-6 pt-12 w-full ${vehiclefound ? 'block' : 'hidden'}`}
       >
         <LookingForDriver 
           setvehiclefound={setvehiclefound}
@@ -345,11 +392,8 @@ useGSAP(function() {
           selectedVehicle={selectedVehicle}
           fare={fare}
         />
-      </div>
-
-      <div ref={driverfoundPanelRef} className="fixed bg-white z-10 bottom-0 translate-y-full px-3 py-6 pt-12 w-full">
-        <WaitingForDriver setdriverFound={setdriverFound}/>
-      </div>
+      </div> 
+      
     </div>
   );
 };

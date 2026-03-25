@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { CaptainDataContext } from '../context/CaptainContext';
 
 const CaptainDetails = () => {
+  const { captain } = useContext(CaptainDataContext);
+
   return (
     <div className="h-1/2 p-6 bg-white absolute bottom-0 w-full rounded-t-2xl">
 
@@ -13,8 +16,10 @@ const CaptainDetails = () => {
           />
 
           {/* Name */}
-          <h1 className="text-xl font-semibold">Amit Acooli</h1>
-
+          <h1 className="text-xl font-semibold">
+            {captain?.fullName?.firstName || "Loading..."}{" "}
+            {captain?.fullName?.lastName || ""}
+          </h1>
           {/* Price (move right) */}
           <div className="ml-auto text-right">
             <h3 className="text-2xl font-semibold">₹145.40</h3>
@@ -22,8 +27,8 @@ const CaptainDetails = () => {
           </div>
         </div>
         <div>
-          <h4>Experience: 5 years</h4>
-          <h4>Rating: <span><i className="text-sm ri-star-fill">4.9</i></span></h4>
+          <h4>Experience: {captain?.experience || "N/A"} years</h4>
+          <h4>Rating: <span><i className="text-sm ri-star-fill">{captain?.rating || "4.9"}</i></span></h4>
         </div>
 
         <div className='flex justify-center gap-5 items-start mt-8 bg-gray-100 p-4 rounded-xl'>

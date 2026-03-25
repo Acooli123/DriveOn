@@ -5,7 +5,7 @@ const ConfirmedVehicle = (props) => {
 
   // Format fare
   const formatFare = (fareValue) => {
-    if (!fareValue && fareValue !== 0) return "--";
+    if (fareValue === undefined || fareValue === null) return "--";
     return `₹${fareValue}`;
   };
 
@@ -42,7 +42,7 @@ const ConfirmedVehicle = (props) => {
             {distance} km • {duration} min
           </p>
           <p className="text-sm text-gray-500">
-            <i className="ri-user-3-fill"></i> {selectedVehicle?.capacity || '--'} seats
+            <i className="ri-user-3-fill"></i> {selectedVehicle?.capacity ?? '--'} seats
           </p>
         </div>
 
@@ -71,7 +71,7 @@ const ConfirmedVehicle = (props) => {
         </div>
         <button 
           onClick={()=>{
-              props.setvehiclefound(true)
+              props.setdriverFound(true)
               props.setconfirmVehiclePanel(false);
           }} 
           className='w-full p-3 mt-2 bg-green-400 rounded-lg text-xl text-white font-semibold'

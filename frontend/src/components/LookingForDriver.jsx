@@ -5,7 +5,7 @@ const LookingForDriver = (props) => {
 
   // Format fare
   const formatFare = (fareValue) => {
-    if (!fareValue && fareValue !== 0) return "--";
+    if (fareValue === undefined || fareValue === null) return "--";
     return `₹${fareValue}`;
   };
 

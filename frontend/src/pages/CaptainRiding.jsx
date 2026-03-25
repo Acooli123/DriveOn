@@ -28,7 +28,7 @@ const CaptainRiding = () => {
 
       {/* Logout Button */}
       <Link 
-        to="/captain-home" 
+        to="/captains/logout" 
         className="fixed p-3 right-2 top-2 h-12 w-12 bg-white flex items-center justify-center rounded-full shadow-md"
       >
         <i className="text-2xl ri-logout-box-r-line"></i>

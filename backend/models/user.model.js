@@ -8,7 +8,15 @@ const userSchema = new mongoose.Schema({
     lastname: { type: String }
   },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true, select: false }
+  password: { type: String, required: true, select: false },
+  socketId: {
+    type: String,
+    default: null
+  },
+  socketConnectionCount: {
+    type: Number,
+    default: 0
+  }
 });
 
 userSchema.pre("save", async function () {
